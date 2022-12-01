@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ahmad El-Zein\u001b[A\u001b[A\u001b[A\u001b[A\u001bapp\u001b[C\u001b[\u001b[C\u001b[C\u001b[C.js)\u001b[B\u001b[B\u001b[B\u001b[B",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "mysql": "^2.18.1",
+    "req-flash": "0.0.3"
+  }
+}
