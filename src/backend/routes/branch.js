@@ -2,7 +2,7 @@ let express = require('express');
 let router = express.Router();
 
 const app = require('../app.js'); 
-const pool = app.get('pool');
+const pool = require('../pool.js');
 
 // FOURTH
 router.get('/highest-pay-per-employee', (req, res) => {
@@ -13,3 +13,5 @@ router.get('/highest-pay-per-employee', (req, res) => {
 router.delete('/lowest-employee-count', (req, res) => {
 
 });
+
+module.exports = router

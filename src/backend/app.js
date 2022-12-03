@@ -1,8 +1,8 @@
 const express = require('express'); // Import express
 const bodyParser = require ('body-parser'); // Import body-parser
-const pool = require('./pool.js')
-const employee = require('./routes/employee.js'); // pass app as a parameter so we can use pool there
-const branch = require('./routes/branch.js');
+const pool = require('./pool.js');
+const employee = require('./routes/employee'); // pass app as a parameter so we can use pool there
+const branch = require('./routes/branch');
 const app = express(); // Create express app
 
 // Config
@@ -16,10 +16,10 @@ app.set('pool', pool);
 module.exports = app; // Export app
 
 // Feature One, Two, Three
-app.user('/api/employee', employee);
+app.use('/api/employee', employee);
 
 // Feature Four, Five
-app.get('/api/branch', branch);
+app.use('/api/branch', branch);
 
 // Listen
 
