@@ -38,7 +38,12 @@ VALUES (
 SELECT *
 FROM se3309.Employee
 ORDER BY employee_id DESC
-LIMIT 0, 5;
+LIMIT 0, 3;
+
+-- show in workbench:
+SELECT * FROM se3309.Contact WHERE phone_number = "(519) 563-5593";
+SELECT * FROM EmployeeRole WHERE employee_id = 50001;
+SELECT * FROM Employee WHERE employee_id = 50001;
 
 -- THIRD (query)
 /* Find the highest paid employee in the last 4 months */

@@ -21,6 +21,7 @@ because it is more appropriate for the use case. https://www.npmjs.com/package/m
 // });
 
 const pool = mysql.createPool({
+    multipleStatements: true,
     connectionLimit: 10,
     user: 'admin', // Database user
     host: 'se3309.cdu9h2cspncm.us-east-1.rds.amazonaws.com', // Database host

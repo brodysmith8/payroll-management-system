@@ -6,16 +6,6 @@ const pool = require('../pool.js');
 
 // FIRST
 router.put('/:employee_id', (req, res) => {
-    // const query = `
-    //     UPDATE Employee e
-    //     SET e.branch_id = ?,
-    //         e.company_name = (
-    //             SELECT company_name
-    //             FROM Branch b
-    //             WHERE b.branch_id = ?
-    //         )
-    //     WHERE e.employee_id = ?;
-    //     `;
     const viewStart = (req.params.employee_id > 2 ? req.params.employee_id - 2 : 0),
           viewEnd   = 3;
 
@@ -43,6 +33,7 @@ router.put('/:employee_id', (req, res) => {
                 retObj.before = before;
                 retObj.after = r;
                 res.send(retObj);
+                return;
             });
         });
     });
@@ -50,7 +41,71 @@ router.put('/:employee_id', (req, res) => {
 
 // SECOND
 router.post('/', (req, res) => {
+    const queryViewStart = `
+        SELECT *
+        FROM se3309.Employee
+        ORDER BY employee_id DESC
+        LIMIT 0, 3;
+    `;
+    pool.query(queryViewStart, (err, response, fields) => {
+        if (err) throw err;
+        const before = response;
 
+        // could refactor this into automatically choosing max + 1 employee id... cba right now
+        const objectiveQuery = `
+            INSERT INTO EmployeeRole
+            VALUES (?, ?);
+            INSERT INTO Contact (phone_number)
+            VALUES (?);
+            INSERT INTO Employee
+            VALUES (
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                (
+                    SELECT company_name
+                    FROM Branch
+                    WHERE branch_id = ?
+                )
+            );
+        `;
+        
+        const inserts = [
+            req.body.employee_id, 
+            req.body.role_id, 
+            req.body.phone_number, 
+            req.body.employee_id, 
+            req.body.phone_number, 
+            req.body.branch_id,
+            req.body.first_name,
+            req.body.last_name,
+            req.body.start_date,
+            req.body.sin,
+            req.body.bank_institution_number,
+            req.body.bank_transit_number,
+            req.body.bank_account_number,
+            req.body.branch_id
+        ]
+
+        pool.query(objectiveQuery, inserts, (er, resp, fie) => {
+            if (er) throw er;
+            pool.query(queryViewStart, (e, r, f) => {
+                if (e) throw e;
+                let retObj = new Object();
+                retObj.before = before;
+                retObj.after = r;
+                res.send(retObj);
+                return;
+            });
+        });
+    });
 });
 
 // THIRD 
