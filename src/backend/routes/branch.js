@@ -5,7 +5,7 @@ const app = require('../app.js');
 const pool = app.get('pool');
 
 // FOURTH
-router.put('/highest-pay-per-employee', (req, res) => {
+router.get('/highest-pay-per-employee', (req, res) => {
     
 });
 
