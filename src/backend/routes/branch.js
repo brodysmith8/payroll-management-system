@@ -64,7 +64,48 @@ router.get('/highest-pay-per-employee', (req, res) => {
 
 // FIFTH
 router.delete('/lowest-employee-count', (req, res) => {
+    const beforeQuery = `
+        SELECT branch_id,
+            COUNT(branch_id) AS num_employees
+        FROM Employee
+        GROUP BY branch_id
+        ORDER BY num_employees ASC
+        LIMIT 5;
+        SELECT COUNT(e.employee_id) AS total_number_of_employees
+        FROM Employee e; 
+        SELECT COUNT(b.branch_id) AS total_number_of_branches
+        FROM Branch b;
+    `;
+    pool.query(beforeQuery, (error, response, fields) => {
+        if (error) throw error;
+        let retObj = new Object();
+        retObj.before = response;
 
+        const objectiveQuery = `
+            DELETE FROM Branch
+            WHERE branch_id = (
+                SELECT branch_id
+                FROM (
+                        SELECT branch_id,
+                            COUNT(branch_id) AS num_employees
+                        FROM Employee
+                        GROUP BY branch_id
+                        ORDER BY num_employees ASC
+                        LIMIT 1
+                    ) AS branch_id_to_delete
+            );
+        `;
+
+        pool.query(objectiveQuery, (er, resp, fields) => {
+            if (er) throw er;
+            pool.query(beforeQuery, (err, respo, fieldz) => {
+                if (err) throw err;
+                retObj.after = respo;
+                res.send(retObj);
+                return;
+            });
+        });
+    });
 });
 
 module.exports = router
