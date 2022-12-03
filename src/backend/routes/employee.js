@@ -112,27 +112,41 @@ router.post('/', (req, res) => {
 router.get('/highest-paid', (req, res) => {
     let retObj = new Object();
     const objectiveQuery = `
-        SELECT employee_id,
-        employee_first_name,
-        employee_last_name,
-        total_paid,
-        role_name,
-        salary
-        FROM Employee
-            NATURAL JOIN (
-                (
-                    (
-                        SELECT employee_id,
-                            SUM(payment_salary + payment_bonus) AS total_paid
-                        FROM Payroll
-                        GROUP BY employee_id
-                        ORDER BY total_paid DESC
-                        LIMIT 1
-                    ) AS TopPaidEmployee
-                    NATURAL JOIN EmployeeRole
-                )
-                NATURAL JOIN \`Role\`
-            );`;
+        SELECT e.employee_id,
+        e.employee_first_name,
+        e.employee_last_name,
+        t4.total_paid,
+        t4.role_name,
+        t4.salary
+        FROM Employee e,
+            (
+                SELECT t1.*,
+                    t3.role_id,
+                    t3.role_name,
+                    t3.salary
+                FROM (
+                    SELECT employee_id,
+                        SUM(payment_salary + payment_bonus) AS total_paid
+                    FROM Payroll
+                    GROUP BY employee_id
+                    ORDER BY total_paid DESC
+                    LIMIT 1
+                ) t1
+                INNER JOIN (
+                    SELECT t2.employee_id,
+                        r.role_id,
+                        r.role_name,
+                        r.salary
+                    FROM \`Role\` r,
+                        (
+                            SELECT er.role_id,
+                                er.employee_id
+                            FROM EmployeeRole er
+                        ) t2
+                    WHERE r.role_id = t2.role_id
+                ) t3 ON t1.employee_id = t3.employee_id
+            ) t4
+        WHERE e.employee_id = t4.employee_id;`;
 
     pool.query(objectiveQuery, (error, response, fields) => {
         if (error) throw error;
