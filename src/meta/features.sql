@@ -47,6 +47,7 @@ SELECT * FROM Employee WHERE employee_id = 50001;
 
 -- THIRD (query)
 /* Find the highest paid employee in the last 4 months */
+/* how are you supposed to validate queries????? */
 SELECT employee_id,
     employee_first_name,
     employee_last_name,

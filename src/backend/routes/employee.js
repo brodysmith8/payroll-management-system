@@ -110,7 +110,49 @@ router.post('/', (req, res) => {
 
 // THIRD 
 router.get('/highest-paid', (req, res) => {
+    let retObj = new Object();
+    const objectiveQuery = `
+        SELECT employee_id,
+        employee_first_name,
+        employee_last_name,
+        total_paid,
+        role_name,
+        salary
+        FROM Employee
+            NATURAL JOIN (
+                (
+                    (
+                        SELECT employee_id,
+                            SUM(payment_salary + payment_bonus) AS total_paid
+                        FROM Payroll
+                        GROUP BY employee_id
+                        ORDER BY total_paid DESC
+                        LIMIT 1
+                    ) AS TopPaidEmployee
+                    NATURAL JOIN EmployeeRole
+                )
+                NATURAL JOIN \`Role\`
+            );`;
 
+    pool.query(objectiveQuery, (error, response, fields) => {
+        if (error) throw error;
+        retObj.highest_paid_employee = response;
+        // I literally don't know if this is enough validation
+        const validationQuery = `
+            SELECT employee_id,
+            SUM(payment_salary + payment_bonus) AS total_paid
+            FROM Payroll
+            GROUP BY employee_id
+            ORDER BY total_paid DESC
+            LIMIT 0, 10
+        `;
+        pool.query(validationQuery, (err, resp, fiel) => {
+            if (err) throw err;
+            retObj.validation_list = resp;
+            res.send(retObj);
+            return;
+        });
+    });
 });
 
 module.exports = router
