@@ -1,5 +1,6 @@
-1. Change a certain employee branch (modification) \
-2. Add a new employee to Company (modification) \
-3. Find the highest paid employee (query)\
-4. Find the branch with the highest pay-per-employee (query) \
-5. Delete the branch with the lowest employee count (modification and query)}
+1. Change a certain employee branch and update their company if it changes (modification)
+2. Add a new employee (modification)
+3. Find the highest paid employee in the last 4 months (query)
+4. Find the branch with the highest pay-per-employee (query)
+5. Delete the branch with the lowest employee count (modification and query)
+    - removes employees too 
