@@ -10,6 +10,7 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
+		"@skeletonlabs/skeleton": "^0.76.3",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
 		"autoprefixer": "^10.4.13",
@@ -25,6 +26,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"highlight.js": "^11.7.0",
+		"svelte-table": "^0.5.2",
 		"tailwindcss-opentype": "^1.1.0"
 	}
 }

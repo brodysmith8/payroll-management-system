@@ -1,3 +1,21 @@
+<script>
+	import { onMount } from "svelte";
+	//import { apiData } from './store.js'; // what is this for? 
+	import { CodeBlock } from '@skeletonlabs/skeleton';
+	import 'highlight.js/styles/androidstudio.css';
+
+	// onMount(async() => {
+	// 	fetch('apilink')
+	// 		.then(response => response.json())
+	// 		.then(data => {
+	// 			console.log(data); 
+	// 			apiData.set(data);
+	// 		}).catch(error => {
+	// 			console.log(error);
+	// 			return [];
+	// 		});
+	// });
+</script>
 <svelte:head>
     <title>Feature Two</title>
 </svelte:head>
@@ -11,7 +29,7 @@
 		<div class="w-full md:max-w-4xl mx-auto flex flex-wrap items-center justify-between mt-5 py-3">
 
 			<div class="mx-auto">
-				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold text-xl small-caps" href="/">
+				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold md:text-4xl small-caps" href="/">
 					Regent Park Payroll
 				</a>
 			</div>
@@ -39,17 +57,36 @@
 						<h1 class="font-bold font-sans break-normal text-gray-900 pt-6 text-3xl -mb-0.5 md:text-4xl">Feature Two</h1>
 						<p class="text-sm md:text-base font-normal text-gray-600 pb-3"><strong class="small-caps text-gray-900">Modification:</strong> add a new employee</p>
 			</div>
-
-            <pre class="bg-gray-900 rounded text-white font-mono text-base md:p-4">
-<code class="break-words">UPDATE Employee e
-SET e.branch_id = ?,
-    e.company_name = (
-        SELECT company_name
-        FROM Branch b
-        WHERE b.branch_id = ?
-    )
-WHERE e.employee_id = ?;
-</code></pre>
+			
+			<div class="code-block">
+				<CodeBlock class="p-4" language="sql" background='bg-[#141517]' text='text-sm' rounded='rounded-container-token' code={`
+INSERT INTO EmployeeRole
+VALUES (50001, 43);
+INSERT INTO Contact (phone_number)
+VALUES ("(519) 563-5593");
+INSERT INTO Employee
+VALUES (
+	50001,
+	"(519) 563-5593",
+	2,
+	"Firstname",
+	"Lastname",
+	"2010-06-25",
+	"276390558",
+	"623",
+	"12821",
+	"0187034",
+	(
+		SELECT company_name
+		FROM Branch
+		WHERE branch_id = 2
+	)
+);
+SELECT *
+FROM se3309.Employee
+ORDER BY employee_id DESC
+LIMIT 0, 3;`}></CodeBlock>
+</div>
 
 <div class="w-full font-sans mx-auto p-1 pr-0 pl-0 flex flex-wrap items-center">
     <button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-bold tracking-wider py-4 rounded shadow hover:bg-green-400">GO</button>
@@ -152,7 +189,6 @@ WHERE e.employee_id = ?;
 			scroll;
 		var scrollpos = window.scrollY;
 		var header = document.getElementById("header");
-		var navcontent = document.getElementById("nav-content");
 
 		document.addEventListener('scroll', function() {
 
@@ -166,13 +202,9 @@ WHERE e.employee_id = ?;
 			if (scrollpos > 10) {
 				header.classList.add("bg-white");
 				header.classList.add("shadow");
-				navcontent.classList.remove("bg-gray-100");
-				navcontent.classList.add("bg-white");
 			} else {
 				header.classList.remove("bg-white");
 				header.classList.remove("shadow");
-				navcontent.classList.remove("bg-white");
-				navcontent.classList.add("bg-gray-100");
 
 			}
 

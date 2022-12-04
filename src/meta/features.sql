@@ -123,4 +123,4 @@ WHERE branch_id = (
                 ORDER BY num_employees ASC
                 LIMIT 1
             ) AS branch_id_to_delete
-    );
+);

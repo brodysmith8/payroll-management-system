@@ -1,3 +1,20 @@
+<script>
+	import { onMount } from "svelte";
+	import { apiData } from './store.js'; // what is this for? 
+	import { CodeBlock } from '@skeletonlabs/skeleton';
+	
+	onMount(async() => {
+		fetch('apilink')
+			.then(response => response.json())
+			.then(data => {
+				console.log(data); 
+				apiData.set(data);
+			}).catch(error => {
+				console.log(error);
+				return [];
+			});
+	});
+</script>
 <svelte:head>
     <title>Feature Three</title>
 </svelte:head>
@@ -11,7 +28,7 @@
 		<div class="w-full md:max-w-4xl mx-auto flex flex-wrap items-center justify-between mt-5 py-3">
 
 			<div class="mx-auto">
-				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold text-xl small-caps" href="/">
+				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold md:text-4xl small-caps" href="/">
 					Regent Park Payroll
 				</a>
 			</div>
@@ -40,16 +57,44 @@
 						<p class="text-sm md:text-base font-normal text-gray-600 pb-3"><strong class="small-caps text-gray-900">Query:</strong> find the highest paid employee in the last four months</p>
 			</div>
 
-            <pre class="bg-gray-900 rounded text-white font-mono text-base md:p-4">
-<code class="break-words">UPDATE Employee e
-SET e.branch_id = ?,
-    e.company_name = (
-        SELECT company_name
-        FROM Branch b
-        WHERE b.branch_id = ?
-    )
-WHERE e.employee_id = ?;
-</code></pre>
+			<div class="code-block">
+				<CodeBlock class="p-4" language="sql" background='bg-[#141517]' text='text-sm' rounded='rounded-container-token' code={`
+SELECT e.employee_id,
+    e.employee_first_name,
+    e.employee_last_name,
+    t4.total_paid,
+    t4.role_name,
+    t4.salary
+FROM Employee e,
+    (
+        SELECT t1.*,
+            t3.role_id,
+            t3.role_name,
+            t3.salary
+        FROM (
+                SELECT employee_id,
+                    SUM(payment_salary + payment_bonus) AS total_paid
+                FROM Payroll
+                GROUP BY employee_id
+                ORDER BY total_paid DESC
+                LIMIT 1
+            ) t1
+            INNER JOIN (
+                SELECT t2.employee_id,
+                    r.role_id,
+                    r.role_name,
+                    r.salary
+                FROM \`Role\` r,
+                    (
+                        SELECT er.role_id,
+                            er.employee_id
+                        FROM EmployeeRole er
+                    ) t2
+                WHERE r.role_id = t2.role_id
+            ) t3 ON t1.employee_id = t3.employee_id
+    ) t4
+WHERE e.employee_id = t4.employee_id;`}></CodeBlock>
+</div>
 
 <div class="w-full font-sans mx-auto p-1 pr-0 pl-0 flex flex-wrap items-center">
     <button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-bold tracking-wider py-4 rounded shadow hover:bg-green-400">GO</button>

@@ -11,7 +11,7 @@
 		<div class="w-full md:max-w-4xl mx-auto flex flex-wrap items-center justify-between mt-5 py-3">
 
 			<div class="mx-auto">
-				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold text-xl small-caps" href="/">
+				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold md:text-4xl small-caps" href="/">
 					Regent Park Payroll
 				</a>
 			</div>

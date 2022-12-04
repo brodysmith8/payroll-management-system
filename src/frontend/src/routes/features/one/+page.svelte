@@ -1,17 +1,61 @@
+<script>
+import { CodeBlock } from '@skeletonlabs/skeleton';
+import SvelteTable from "svelte-table";
+
+/** @type {import('./$types').PageData} */  
+export let data;
+const vData = data.validation_list;
+let selectedCols = ["branch_id", "pay_per_employee", "total_paid", "number_of_employees"];
+//console.log(data.highest_pay_per_employee);
+
+const vCOLUMNS = {
+	branch_id : {
+		key:"branch_id",
+		title:"branch_id",
+		value: v => v.branch_id,
+		sortable: true,
+		headerClass: "border border-slate-600",
+	},
+	pay_per_employee : {
+		key:"pay_per_employee",
+		title:"pay_per_employee",
+		value: v => v.pay_per_employee,
+		sortable: true,
+		headerClass: "border border-slate-600",
+	},
+	total_paid : {
+		key:"total_paid",
+		title:"total_paid",
+		value: v => v.total_paid,
+		sortable: true,
+		headerClass: "border border-slate-600",		
+	},
+	number_of_employees : {
+		key:"number_of_employees",
+		title:"number_of_employees",
+		value: v => v.number_of_employees,
+		sortable: true,
+		headerClass: "border border-slate-600",				
+	}
+};
+
+$: cols = selectedCols.map(key => vCOLUMNS[key]);
+
+</script>
+
 <svelte:head>
     <title>Feature One</title>
 </svelte:head>
 
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
-
-	<nav id="header" class="fixed w-full z-10 top-0">
+	<nav id="headerab" class="fixed w-full z-10 top-0">
 
 		<div id="progress" class="h-1 z-20 top-0"></div>
 
 		<div class="w-full md:max-w-4xl mx-auto flex flex-wrap items-center justify-between mt-5 py-3">
 
 			<div class="mx-auto">
-				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold text-xl small-caps" href="/">
+				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold md:text-4xl small-caps" href="/">
 					Regent Park Payroll
 				</a>
 			</div>
@@ -31,7 +75,7 @@
 	<div class="container w-full md:max-w-3xl mx-auto pt-20 pb-20">
 
 		<div class="w-full px-4 md:px-6 text-xl text-gray-800 leading-normal" style="font-family:Georgia,serif;">
-
+ 
 			<!--Title-->
 			<div class="font-sans">
 				<p class="text-base md:text-sm text-green-500 font-bold text-center"><a href="/" class="text-base md:text-sm text-green-500 font-bold no-underline hover:underline">&lt; BACK</a></p>
@@ -39,17 +83,16 @@
 						<h1 class="font-bold font-sans break-normal text-gray-900 pt-6 text-3xl -mb-0.5 md:text-4xl">Feature One</h1>
 						<p class="text-sm md:text-base font-normal text-gray-600 pb-3"><strong class="small-caps text-gray-900">Modification:</strong> change employee branch and update the name of the company they work at</p>
 			</div>
-
-            <pre class="bg-gray-900 rounded text-white font-mono text-base md:p-4">
-<code class="break-words">UPDATE Employee e
+			<div class="code-block">
+				<CodeBlock class="p-4" language="sql" background='bg-[#141517]' text='text-sm' rounded='rounded-container-token' code={`
 SET e.branch_id = ?,
-    e.company_name = (
-        SELECT company_name
-        FROM Branch b
-        WHERE b.branch_id = ?
-    )
-WHERE e.employee_id = ?;
-</code></pre>
+	e.company_name = (
+		SELECT company_name
+		FROM Branch b
+		WHERE b.branch_id = ?
+	)
+WHERE e.employee_id = ?;`}></CodeBlock>
+</div>
 
 <div class="w-full font-sans mx-auto p-1 pr-0 pl-0 flex flex-wrap items-center">
     <button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-bold tracking-wider py-4 rounded shadow hover:bg-green-400">GO</button>
@@ -90,33 +133,14 @@ WHERE e.employee_id = ?;
   <div class="font-sans text-center">
     <p class="text-xl small-caps font-bold text-gray-900 mt-6">Validation Result</p>
 </div>
-<table class="w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1">
-    <thead class="bg-green-500 text-white">
-      <tr>
-        <th class="border border-slate-600">Song</th>
-        <th class="border border-slate-600">Artist</th>
-        <th class="border border-slate-600">Year</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="border border-slate-700">The Sliding Mr. Bones (Next Stop, Pottersville)</td>
-        <td class="border border-slate-700">Malcolm Lockyer</td>
-        <td class="border border-slate-700">1961</td>
-      </tr>
-      <tr>
-        <td class="border border-slate-700">Witchy Woman</td>
-        <td class="border border-slate-700">The Eagles</td>
-        <td class="border border-slate-700">1972</td>
-      </tr>
-      <tr>
-        <td class="border border-slate-700">Shining Star</td>
-        <td class="border border-slate-700">Earth, Wind, and Fire</td>
-        <td class="border border-slate-700">1975</td>
-      </tr>
-    </tbody>
-  </table>
-			<!--/ Post Content-->
+<div class="row">
+	<SvelteTable
+		columns={cols}
+		rows={vData} 
+		classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
+      	classNameThead={['bg-green-500 text-white']}
+      	classNameCell={'border border-slate-600'}/>
+</div>
 
 		</div>
 
@@ -151,8 +175,7 @@ WHERE e.employee_id = ?;
 			progress = document.querySelector('#progress'),
 			scroll;
 		var scrollpos = window.scrollY;
-		var header = document.getElementById("header");
-		var navcontent = document.getElementById("nav-content");
+		var header = document.getElementById("headerab");
 
 		document.addEventListener('scroll', function() {
 
@@ -166,13 +189,9 @@ WHERE e.employee_id = ?;
 			if (scrollpos > 10) {
 				header.classList.add("bg-white");
 				header.classList.add("shadow");
-				navcontent.classList.remove("bg-gray-100");
-				navcontent.classList.add("bg-white");
 			} else {
 				header.classList.remove("bg-white");
 				header.classList.remove("shadow");
-				navcontent.classList.remove("bg-white");
-				navcontent.classList.add("bg-gray-100");
 
 			}
 

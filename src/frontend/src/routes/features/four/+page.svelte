@@ -1,3 +1,20 @@
+<script>
+	import { onMount } from "svelte";
+	import { apiData } from './store.js'; // what is this for? 
+	import { CodeBlock } from '@skeletonlabs/skeleton';
+	
+	onMount(async() => {
+		fetch('apilink')
+			.then(response => response.json())
+			.then(data => {
+				console.log(data); 
+				apiData.set(data);
+			}).catch(error => {
+				console.log(error);
+				return [];
+			});
+	});
+</script>
 <svelte:head>
     <title>Feature Four</title>
 </svelte:head>
@@ -11,7 +28,7 @@
 		<div class="w-full md:max-w-4xl mx-auto flex flex-wrap items-center justify-between mt-5 py-3">
 
 			<div class="mx-auto">
-				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold text-xl small-caps" href="/">
+				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold md:text-4xl small-caps" href="/">
 					Regent Park Payroll
 				</a>
 			</div>
@@ -40,17 +57,28 @@
 						<p class="text-sm md:text-base font-normal text-gray-600 pb-3"><strong class="small-caps text-gray-900">Query:</strong> find the branch with the highest pay-per-employee</p>
 			</div>
 
-            <pre class="bg-gray-900 rounded text-white font-mono text-base md:p-4">
-<code class="break-words">UPDATE Employee e
-SET e.branch_id = ?,
-    e.company_name = (
-        SELECT company_name
-        FROM Branch b
-        WHERE b.branch_id = ?
-    )
-WHERE e.employee_id = ?;
-</code></pre>
-
+			<div class="code-block">
+				<CodeBlock class="p-4" language="sql" background='bg-[#141517]' text='text-sm' rounded='rounded-container-token' code={`
+SELECT branch_id,
+    (total_paid / number_of_employees) AS pay_per_employee
+FROM (
+        SELECT e.employee_id, e.branch_id,
+            SUM(total_paid_employee) AS total_paid,
+            COUNT(branch_id) AS number_of_employees
+        FROM Employee e
+            JOIN (
+                SELECT employee_id,
+                    SUM(payment_salary + payment_bonus) AS total_paid_employee
+                FROM Payroll
+                GROUP BY employee_id
+            ) AS p
+            ON e.employee_id = p.employee_id
+        GROUP BY branch_id
+    ) AS MainTable
+ORDER BY pay_per_employee DESC
+LIMIT 1;`}></CodeBlock>
+</div>
+			
 <div class="w-full font-sans mx-auto p-1 pr-0 pl-0 flex flex-wrap items-center">
     <button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-bold tracking-wider py-4 rounded shadow hover:bg-green-400">GO</button>
     <div class='flex-none w-5'></div>
