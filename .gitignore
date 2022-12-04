@@ -106,3 +106,5 @@ dist
 # ignore node_modules from the backend folder
 /backend/node_modules/
 
+# vscode local settings
+.vscode
