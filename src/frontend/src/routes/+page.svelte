@@ -4,14 +4,14 @@
 
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
-	<nav id="header" class="fixed w-full z-10 top-0">
+	<nav id="header" class="w-full z-10 top-0">
 
 		<div id="progress" class="h-1 z-20 top-0"></div>
 
 		<div class="w-full md:max-w-4xl mx-auto flex flex-wrap items-center justify-between mt-5 py-3">
 
 			<div class="mx-auto">
-				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold md:text-4xl small-caps" href="/">
+				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold md:text-5xl small-caps" href="/">
 					Regent Park Payroll
 				</a>
 			</div>
@@ -28,12 +28,12 @@
 	</nav>
 
 	<!--Container-->
-	<div class="container w-full md:max-w-3xl mx-auto pt-20 pb-20">
+	<div class="container w-full md:max-w-3xl mt-0 mx-auto pb-20">
 
 		<div class="w-full px-4 md:px-6 text-xl text-gray-800 leading-normal" style="font-family:Georgia,serif;">
 
             <div class="font-sans">
-                <h1 class="font-bold font-sans break-normal text-center text-gray-900 pt-6 text-2xl md:text-2xl small-caps">premise</h1>
+                <h1 class="font-bold font-sans break-normal text-center text-gray-900 text-2xl md:text-2xl small-caps">premise</h1>
                 <div class="flex w-full md:w-3/4 text-justify mx-auto">
 					<div class="px-8">
 						<p class="py-2 text-gray-600 text-sm">
@@ -47,12 +47,9 @@ system. <i>RPP</i> provides a platform for company accountants to drive deep ins
 				</div>
             </div>
 
-            <!--Divider-->
-		<hr class="border-b-2 border-gray-400 mb-2">
-
             <!--Title-->
 			<div class="font-sans">
-						<h1 class="font-bold font-sans break-normal text-center text-gray-900 pt-3 text-2xl md:text-2xl small-caps">features</h1>
+						<h1 class="font-bold font-sans break-normal text-center text-gray-900 text-2xl md:text-2xl small-caps">features</h1>
 			</div>
 
             <div class="flex flex-wrap py-1 font-sans text-xl inline">
@@ -101,49 +98,4 @@ system. <i>RPP</i> provides a platform for company accountants to drive deep ins
 
 		</div>
 	</footer>
-
-	<script>
-		/* Progress bar */
-		//Source: https://alligator.io/js/progress-bar-javascript-css-variables/
-		var h = document.documentElement,
-			b = document.body,
-			st = 'scrollTop',
-			sh = 'scrollHeight',
-			progress = document.querySelector('#progress'),
-			scroll;
-		var scrollpos = window.scrollY;
-		var header = document.getElementById("header");
-		var navcontent = document.getElementById("nav-content");
-
-		document.addEventListener('scroll', function() {
-
-			/*Refresh scroll % width*/
-			scroll = (h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight) * 100;
-			progress.style.setProperty('--scroll', scroll + '%');
-
-			/*Apply classes for slide in bar*/
-			scrollpos = window.scrollY;
-
-			if (scrollpos > 10) {
-				header.classList.add("bg-white");
-				header.classList.add("shadow");
-				navcontent.classList.remove("bg-gray-100");
-				navcontent.classList.add("bg-white");
-			} else {
-				header.classList.remove("bg-white");
-				header.classList.remove("shadow");
-				navcontent.classList.remove("bg-white");
-				navcontent.classList.add("bg-gray-100");
-
-			}
-
-		});
-
-
-		//Javascript to toggle the menu
-		document.getElementById('nav-toggle').onclick = function() {
-			document.getElementById("nav-content").classList.toggle("hidden");
-		}
-	</script>
-
 </body>

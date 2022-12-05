@@ -1,7 +1,7 @@
 <script>
   import '../app.css';
   import hljs from 'highlight.js';
-  import 'highlight.js/styles/androidstudio.css';
+  import '../styles/obsidian_but_green500.css';
   import { storeHighlightJs } from '@skeletonlabs/skeleton';
 
   storeHighlightJs.set(hljs);

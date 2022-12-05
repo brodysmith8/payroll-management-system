@@ -107,4 +107,4 @@ dist
 /backend/node_modules/
 
 # vscode local settings
-.vscode
+/.vscode/settings.json

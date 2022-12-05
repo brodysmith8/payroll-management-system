@@ -1,64 +1,169 @@
 <script>
-	import { onMount } from "svelte";
-	import { apiData } from './store.js'; // what is this for? 
 	import { CodeBlock } from '@skeletonlabs/skeleton';
+	import SvelteTable from "svelte-table";
+
+	let sortBy = "pay_per_employee";
+  	let sortOrder = 0;
+	let rSelectedCols = ["branch_id", "pay_per_employee"];
+	let vSelectedCols = ["branch_id", "pay_per_employee", "total_paid", "number_of_employees"];
+
+	let rData = null;
+	let rState = false;
+	let vData = null;
+	let vState = false;
+
+	let rLoadingState = false;
 	
-	onMount(async() => {
-		fetch('apilink')
-			.then(response => response.json())
-			.then(data => {
-				console.log(data); 
-				apiData.set(data);
-			}).catch(error => {
-				console.log(error);
-				return [];
-			});
-	});
+
+	let data = null;
+
+	const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+	let dotz = ".";
+	function addDotz() {
+		if (dotz === "...") {
+			return dotz = ".";
+		} else {
+			dotz += ".";
+			return dotz;
+		}
+	}
+
+	async function loadWait() {
+		while(true) {
+			addDotz();
+			await delay(500);
+		}
+	}
+
+	async function getQuery () {
+		rLoadingState = true;
+		const res = await fetch('http://localhost:3000/api/branch/highest-pay-per-employee');
+		data = await res.json();
+
+		rData = data.highest_pay_per_employee;
+		rState = true;
+		rLoadingState = false;
+	}
+
+	async function getValidation () {
+		if (rState) {
+			vData = data.validation_list;
+			vState = true;
+		}
+	}
+
+	//console.log(data.highest_pay_per_employee);
+	
+	const rCOLUMNS = {
+		branch_id : {
+			key:"branch_id",
+			title:"branch_id",
+			value: v => v.branch_id,
+			sortable: true,
+			headerClass: "border border-slate-600",
+		},
+		pay_per_employee : {
+			key:"pay_per_employee",
+			title:"pay_per_employee",
+			value: v => v.pay_per_employee,
+			sortable: true,
+			headerClass: "border border-slate-600",
+		},
+		total_paid : {
+			key:"total_paid",
+			title:"total_paid",
+			value: v => v.total_paid,
+			sortable: true,
+			headerClass: "border border-slate-600",		
+		},
+		number_of_employees : {
+			key:"number_of_employees",
+			title:"number_of_employees",
+			value: v => v.number_of_employees,
+			sortable: true,
+			headerClass: "border border-slate-600",				
+		}
+	}
+
+	const vCOLUMNS = {
+		branch_id : {
+			key:"branch_id",
+			title:"branch_id",
+			value: v => v.branch_id,
+			sortable: true,
+			headerClass: "border border-slate-600",
+		},
+		pay_per_employee : {
+			key:"pay_per_employee",
+			title:"pay_per_employee",
+			value: v => v.pay_per_employee,
+			sortable: true,
+			headerClass: "border border-slate-600",
+		},
+		total_paid : {
+			key:"total_paid",
+			title:"total_paid",
+			value: v => v.total_paid,
+			sortable: true,
+			headerClass: "border border-slate-600",		
+		},
+		number_of_employees : {
+			key:"number_of_employees",
+			title:"number_of_employees",
+			value: v => v.number_of_employees,
+			sortable: true,
+			headerClass: "border border-slate-600",				
+		}
+	};
+	
+	$: rCols = rSelectedCols.map(key => rCOLUMNS[key]);
+	$: vCols = vSelectedCols.map(key => vCOLUMNS[key]);
+	
 </script>
-<svelte:head>
-    <title>Feature Three</title>
-</svelte:head>
-
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
-
-	<nav id="header" class="fixed w-full z-10 top-0">
-
-		<div id="progress" class="h-1 z-20 top-0"></div>
-
-		<div class="w-full md:max-w-4xl mx-auto flex flex-wrap items-center justify-between mt-5 py-3">
-
-			<div class="mx-auto">
-				<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold md:text-4xl small-caps" href="/">
-					Regent Park Payroll
-				</a>
+	
+	<svelte:head>
+		<title>Feature Three</title>
+	</svelte:head>
+	
+	<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+		<nav id="headerab" class="w-full z-10 top-0">
+	
+			<div id="progress" class="h-1 z-20 top-0"></div>
+	
+			<div class="w-full md:max-w-4xl mx-auto flex flex-wrap items-center justify-between mt-5 py-3">
+	
+				<div class="mx-auto">
+					<a class="text-gray-900 text-4xl no-underline hover:no-underline font-extrabold md:text-5xl small-caps" href="/">
+						Regent Park Payroll
+					</a>
+				</div>
+	
+				<div class="block lg:hidden pr-4">
+					<button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-green-500 appearance-none focus:outline-none">
+						<svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+							<title>Menu</title>
+							<path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+						</svg>
+					</button>
+				</div>
 			</div>
-
-			<div class="block lg:hidden pr-4">
-				<button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-green-500 appearance-none focus:outline-none">
-					<svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-						<title>Menu</title>
-						<path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-					</svg>
-				</button>
-			</div>
-		</div>
-	</nav>
-
-	<!--Container-->
-	<div class="container w-full md:max-w-3xl mx-auto pt-20 pb-20">
-
-		<div class="w-full px-4 md:px-6 text-xl text-gray-800 leading-normal" style="font-family:Georgia,serif;">
-
-			<!--Title-->
-			<div class="font-sans">
-				<p class="text-base md:text-sm text-green-500 font-bold text-center"><a href="/" class="text-base md:text-sm text-green-500 font-bold no-underline hover:underline">&lt; BACK</a></p>
-				<p class="text-base md:text-sm text-green-500 font-bold text-center"><a href="/features/four" class="text-base md:text-sm text-green-500 font-bold no-underline hover:underline">NEXT &gt;</a></p>
-						<h1 class="font-bold font-sans break-normal text-gray-900 pt-6 text-3xl -mb-0.5 md:text-4xl">Feature Three</h1>
-						<p class="text-sm md:text-base font-normal text-gray-600 pb-3"><strong class="small-caps text-gray-900">Query:</strong> find the highest paid employee in the last four months</p>
-			</div>
-
-			<div class="code-block">
-				<CodeBlock class="p-4" language="sql" background='bg-[#141517]' text='text-sm' rounded='rounded-container-token' code={`
+		</nav>
+	
+		<!--Container-->
+		<div class="container w-full md:max-w-3xl mt-2 mx-auto pb-20">
+	
+			<div class="w-full px-4 md:px-6 text-xl text-gray-800 leading-normal" style="font-family:Georgia,serif;">
+	 
+				<!--Title-->
+				<div class="font-sans">
+					<p class="text-base md:text-sm text-green-500 font-bold text-center"><a href="/" class="text-base md:text-sm text-green-500 font-bold no-underline hover:underline">&lt; BACK</a></p>
+					<p class="text-base md:text-sm text-green-500 font-bold text-center"><a href="/features/four" class="text-base md:text-sm text-green-500 font-bold no-underline hover:underline">NEXT &gt;</a></p>
+					<h1 class="font-bold font-sans break-normal text-gray-900 text-3xl -mb-0.5 md:text-4xl small-caps">feature three</h1>
+					<p class="text-sm md:text-base font-normal text-gray-600 pb-1"><strong class="small-caps text-gray-900">query:</strong> find the highest paid employee in the last four months</p>
+				</div>
+				<div class="code-block font-sans">
+				<CodeBlock class="p-4" language="sql" background='bg-[#141517]' text='text-sm' buttonCopy='p-0.5 pt-0 border border-2 rounded-none uppercase' rounded='rounded-container-token' code={`
 SELECT e.employee_id,
     e.employee_first_name,
     e.employee_last_name,
@@ -94,140 +199,70 @@ FROM Employee e,
             ) t3 ON t1.employee_id = t3.employee_id
     ) t4
 WHERE e.employee_id = t4.employee_id;`}></CodeBlock>
-</div>
-
-<div class="w-full font-sans mx-auto p-1 pr-0 pl-0 flex flex-wrap items-center">
-    <button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-bold tracking-wider py-4 rounded shadow hover:bg-green-400">GO</button>
-    <div class='flex-none w-5'></div>
-    <button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-semibold tracking-wider uppercase py-4 rounded shadow hover:bg-green-400">VALIDATE</button>
-</div>
-
-<div class="font-sans text-center">
-    <p class="text-xl small-caps font-bold text-gray-900 mt-6">Query Result</p>
-</div>
-<table class="w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1">
-    <thead class="bg-green-500 text-white">
-      <tr>
-        <th class="border border-slate-600">Song</th>
-        <th class="border border-slate-600">Artist</th>
-        <th class="border border-slate-600">Year</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="border border-slate-700">The Sliding Mr. Bones (Next Stop, Pottersville)</td>
-        <td class="border border-slate-700">Malcolm Lockyer</td>
-        <td class="border border-slate-700">1961</td>
-      </tr>
-      <tr>
-        <td class="border border-slate-700">Witchy Woman</td>
-        <td class="border border-slate-700">The Eagles</td>
-        <td class="border border-slate-700">1972</td>
-      </tr>
-      <tr>
-        <td class="border border-slate-700">Shining Star</td>
-        <td class="border border-slate-700">Earth, Wind, and Fire</td>
-        <td class="border border-slate-700">1975</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="font-sans text-center">
-    <p class="text-xl small-caps font-bold text-gray-900 mt-6">Validation Result</p>
-</div>
-<table class="w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1">
-    <thead class="bg-green-500 text-white">
-      <tr>
-        <th class="border border-slate-600">Song</th>
-        <th class="border border-slate-600">Artist</th>
-        <th class="border border-slate-600">Year</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="border border-slate-700">The Sliding Mr. Bones (Next Stop, Pottersville)</td>
-        <td class="border border-slate-700">Malcolm Lockyer</td>
-        <td class="border border-slate-700">1961</td>
-      </tr>
-      <tr>
-        <td class="border border-slate-700">Witchy Woman</td>
-        <td class="border border-slate-700">The Eagles</td>
-        <td class="border border-slate-700">1972</td>
-      </tr>
-      <tr>
-        <td class="border border-slate-700">Shining Star</td>
-        <td class="border border-slate-700">Earth, Wind, and Fire</td>
-        <td class="border border-slate-700">1975</td>
-      </tr>
-    </tbody>
-  </table>
-			<!--/ Post Content-->
-
-		</div>
-
-		<!--/Next & Prev Links-->
-
 	</div>
-	<!--/container-->
+	
+	<div class="w-full font-sans mx-auto p-1 pr-0 pl-0 flex flex-wrap items-center">
+		<button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-bold tracking-wider py-4 rounded shadow hover:bg-green-400" on:click={getQuery}>
+			{#if !rLoadingState}
+			GO 
+			{:else}
+			...
+			{/if}
+		</button>
+		<div class='flex-none w-5'></div>
+		<button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-semibold tracking-wider uppercase py-4 rounded shadow hover:bg-green-400" on:click={getValidation}>VALIDATE</button>
+	</div>
+	
+	{#if rState}
+	<div class="font-sans text-center">
+		<p class="text-xl small-caps font-bold text-gray-900 mt-6">query result</p>
+	</div>
+	<div class="row">
+		<SvelteTable
+			columns={rCols}
+			rows={rData} 
+			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
+			  classNameThead={['bg-green-500 text-white']}
+			  classNameCell={'border border-slate-600'}/>
+	</div>
+	{/if}
 
-	<footer class="bg-white border-t border-gray-400 shadow">
-		<div class="container max-w-4xl mx-auto flex py-8">
+	{#if vState}
+	<div class="font-sans text-center">
+		<p class="text-xl small-caps font-bold text-gray-900 mt-6">validation result</p>
+	</div>
 
-			<div class="w-full mx-auto flex flex-wrap">
-				<div class="flex w-full md:w-1/2 mx-auto text-center">
-					<div class="px-8">
-						<h3 class="font-bold text-gray-900">Regent Park Enterprises, Inc. (c) 2022</h3>
+	<div class="row">
+		<SvelteTable
+			columns={vCols}
+			rows={vData} 
+			bind:sortBy
+      		bind:sortOrder
+			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
+			  classNameThead={['bg-green-500 text-white']}
+			  classNameCell={'border border-slate-600'}/>
+	</div>
+	{/if}
+			</div>
+	
+			<!--/Next & Prev Links-->
+	
+		</div>
+		<!--/container-->
+	
+		<footer class="bg-white border-t border-gray-400 shadow">
+			<div class="container max-w-4xl mx-auto flex py-8">
+	
+				<div class="w-full mx-auto flex flex-wrap">
+					<div class="flex w-full md:w-1/2 mx-auto text-center">
+						<div class="px-8">
+							<h3 class="font-bold text-gray-900">Regent Park Enterprises, Inc. (c) 2022</h3>
+						</div>
 					</div>
 				</div>
+	
+	
+	
 			</div>
-
-
-
-		</div>
-	</footer>
-
-	<script>
-		/* Progress bar */
-		//Source: https://alligator.io/js/progress-bar-javascript-css-variables/
-		var h = document.documentElement,
-			b = document.body,
-			st = 'scrollTop',
-			sh = 'scrollHeight',
-			progress = document.querySelector('#progress'),
-			scroll;
-		var scrollpos = window.scrollY;
-		var header = document.getElementById("header");
-		var navcontent = document.getElementById("nav-content");
-
-		document.addEventListener('scroll', function() {
-
-			/*Refresh scroll % width*/
-			scroll = (h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight) * 100;
-			progress.style.setProperty('--scroll', scroll + '%');
-
-			/*Apply classes for slide in bar*/
-			scrollpos = window.scrollY;
-
-			if (scrollpos > 10) {
-				header.classList.add("bg-white");
-				header.classList.add("shadow");
-				navcontent.classList.remove("bg-gray-100");
-				navcontent.classList.add("bg-white");
-			} else {
-				header.classList.remove("bg-white");
-				header.classList.remove("shadow");
-				navcontent.classList.remove("bg-white");
-				navcontent.classList.add("bg-gray-100");
-
-			}
-
-		});
-
-
-		//Javascript to toggle the menu
-		document.getElementById('nav-toggle').onclick = function() {
-			document.getElementById("nav-content").classList.toggle("hidden");
-		}
-	</script>
-
-</body>
+		</footer>
+	</body>
