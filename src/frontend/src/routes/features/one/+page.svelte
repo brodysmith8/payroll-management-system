@@ -2,9 +2,9 @@
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import SvelteTable from "svelte-table";
 
-	let sortBy = "pay_per_employee";
+	let sortBy = "employee_id";
   	let sortOrder = 0;
-	let rSelectedCols = ["branch_id", "pay_per_employee"];
+	let rSelectedCols = ["employee_id", "branch_id", "employee_first_name", "employee_last_name", "company_name"];
 	let vSelectedCols = ["branch_id", "pay_per_employee", "total_paid", "number_of_employees"];
 
 	let rData = null;
@@ -13,44 +13,27 @@
 	let vState = false;
 
 	let rLoadingState = false;
-	
 
-	let data = null;
-
-	const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-	let dotz = ".";
-	function addDotz() {
-		if (dotz === "...") {
-			return dotz = ".";
-		} else {
-			dotz += ".";
-			return dotz;
-		}
-	}
-
-	async function loadWait() {
-		while(true) {
-			addDotz();
-			await delay(500);
-		}
-	}
-
+	let branch_id = 0;
+	let employee_id = 0;
 	async function getQuery () {
 		rLoadingState = true;
-		const res = await fetch('http://localhost:3000/api/branch/highest-pay-per-employee');
-		data = await res.json();
-
-		rData = data.highest_pay_per_employee;
-		rState = true;
+		const url = `http://localhost:3000/api/employee/${employee_id}`;
+		const res = await fetch(url, {
+			method: 'PUT',
+			mode: 'cors',
+			cache: 'no-cache',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: `{ \"branch_id\" : ${branch_id} }`,
+		});
+		
+		let data = await res.json();
+		rData = data.before;
+		vData = data.after;
 		rLoadingState = false;
-	}
-
-	async function getValidation () {
-		if (rState) {
-			vData = data.validation_list;
-			vState = true;
-		}
+		rState = true;
 	}
 
 	//console.log(data.highest_pay_per_employee);
@@ -63,25 +46,32 @@
 			sortable: true,
 			headerClass: "border border-slate-600",
 		},
-		pay_per_employee : {
-			key:"pay_per_employee",
-			title:"pay_per_employee",
-			value: v => v.pay_per_employee,
+		employee_id : {
+			key:"employee_id",
+			title:"employee_id",
+			value: v => v.employee_id,
 			sortable: true,
 			headerClass: "border border-slate-600",
 		},
-		total_paid : {
-			key:"total_paid",
-			title:"total_paid",
-			value: v => v.total_paid,
-			sortable: true,
+		employee_first_name : {
+			key:"employee_first_name",
+			title:"first_name",
+			value: v => v.employee_first_name,
+			sortable: false,
 			headerClass: "border border-slate-600",		
 		},
-		number_of_employees : {
-			key:"number_of_employees",
-			title:"number_of_employees",
-			value: v => v.number_of_employees,
-			sortable: true,
+		employee_last_name : {
+			key:"employee_last_name",
+			title:"last_name",
+			value: v => v.employee_last_name,
+			sortable: false,
+			headerClass: "border border-slate-600",				
+		},
+		company_name : {
+			key:"company_name",
+			title:"company_name",
+			value: v => v.company_name,
+			sortable: false,
 			headerClass: "border border-slate-600",				
 		}
 	}
@@ -151,7 +141,7 @@
 		</nav>
 	
 		<!--Container-->
-		<div class="container w-full md:max-w-3xl mt-2 mx-auto pb-20">
+		<div class="container w-full md:max-w-3xl mx-auto pb-20">
 	
 			<div class="w-full px-4 md:px-6 text-xl text-gray-800 leading-normal" style="font-family:Georgia,serif;">
 	 
@@ -174,7 +164,19 @@ SET e.branch_id = 2,
 WHERE e.employee_id = 1;`}></CodeBlock>
 	</div>
 	
-	<div class="w-full font-sans mx-auto p-1 pr-0 pl-0 flex flex-wrap items-center">
+	<div class="w-full mt-1 font-mono mx-auto flex flex-wrap items-center">
+		<p class="flex-1 text-base font-semibold tracking-tight text-center">branch_id</p>
+		<div class='flex-none w-5'></div>
+		<p class="flex-1 text-base font-semibold tracking-tight text-center">employee_id</p>
+	</div>
+	<div class="w-full font-mono mb-3 mx-auto pb-1 flex flex-wrap items-center">
+		<input class="flex-1 pl-1.5 text-base tracking-wider py-4 rounded shadow" bind:value={branch_id}/>
+		<div class='flex-none w-5'></div>
+		<input class="flex-1 pl-1.5 text-base tracking-wider py-4 rounded shadow" bind:value={employee_id}/>
+	</div>
+	
+	<div class="w-full font-sans p-1 pr-0 pl-0 flex flex-wrap items-center">
+		<div class='flex-none w-10'></div>
 		<button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-bold tracking-wider py-4 rounded shadow hover:bg-green-400" on:click={getQuery}>
 			{#if !rLoadingState}
 			GO 
@@ -182,27 +184,42 @@ WHERE e.employee_id = 1;`}></CodeBlock>
 			...
 			{/if}
 		</button>
-		<div class='flex-none w-5'></div>
-		<button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-semibold tracking-wider uppercase py-4 rounded shadow hover:bg-green-400" on:click={getValidation}>VALIDATE</button>
+		<div class='flex-none w-10'></div>
 	</div>
 	
 	{#if rState}
 	<div class="font-sans text-center">
-		<p class="text-xl small-caps font-bold text-gray-900 mt-6">query result</p>
+		<p class="text-xl small-caps font-bold text-gray-900 mt-6">before</p>
 	</div>
 	<div class="row">
 		<SvelteTable
 			columns={rCols}
 			rows={rData} 
+			bind:sortBy
+      		bind:sortOrder
 			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
 			  classNameThead={['bg-green-500 text-white']}
 			  classNameCell={'border border-slate-600'}/>
+	</div>
+	<div class="font-sans text-center">
+		<p class="text-xl small-caps font-bold text-gray-900 mt-6">after</p>
+	</div>
+
+	<div class="row">
+		<SvelteTable
+			columns={rCols}
+			rows={vData} 
+			bind:sortBy
+      		bind:sortOrder
+			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
+			classNameThead={['bg-green-500 text-white']}
+			classNameCell={'border border-slate-600'}/>
 	</div>
 	{/if}
 
 	{#if vState}
 	<div class="font-sans text-center">
-		<p class="text-xl small-caps font-bold text-gray-900 mt-6">validation result</p>
+		<p class="text-xl small-caps font-bold text-gray-900 mt-6">after</p>
 	</div>
 
 	<div class="row">
@@ -212,8 +229,8 @@ WHERE e.employee_id = 1;`}></CodeBlock>
 			bind:sortBy
       		bind:sortOrder
 			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
-			  classNameThead={['bg-green-500 text-white']}
-			  classNameCell={'border border-slate-600'}/>
+			classNameThead={['bg-green-500 text-white']}
+			classNameCell={'border border-slate-600'}/>
 	</div>
 	{/if}
 			</div>
@@ -225,12 +242,9 @@ WHERE e.employee_id = 1;`}></CodeBlock>
 	
 		<footer class="bg-white border-t border-gray-400 shadow">
 			<div class="container max-w-4xl mx-auto flex py-8">
-	
 				<div class="w-full mx-auto flex flex-wrap">
-					<div class="flex w-full md:w-1/2 mx-auto text-center">
-						<div class="px-8">
-							<h3 class="font-bold text-gray-900">Regent Park Enterprises, Inc. (c) 2022</h3>
-						</div>
+					<div class="mx-auto w-full text-center">
+							<h3 class="font-bold text-gray-900">A. El-Zein, S. Ahmad, V. Biyanwila, B. Smith (c) 2022</h3>
 					</div>
 				</div>
 	

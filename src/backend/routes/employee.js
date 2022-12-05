@@ -6,10 +6,11 @@ const pool = require('../pool.js');
 
 // FIRST
 router.put('/:employee_id', (req, res) => {
+    console.log(req.body);
     const viewStart = (req.params.employee_id > 2 ? req.params.employee_id - 2 : 0),
           viewEnd   = 3;
 
-    let viewQuery = 'SELECT * FROM Employee LIMIT ?, ?;';
+    let viewQuery = 'SELECT employee_id, branch_id, employee_first_name, employee_last_name, company_name FROM Employee LIMIT ?, ?;';
     pool.query(viewQuery, [viewStart, viewEnd], (error, results, fields) => {
         if (error) throw error;
         let before;
