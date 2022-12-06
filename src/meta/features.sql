@@ -12,26 +12,26 @@ WHERE e.employee_id = 1;
 
 -- SECOND (modification)
 /* Add a new employee */
-INSERT INTO EmployeeRole
-VALUES (50001, 43);
+INSERT INTO EmployeeRole (role_id)
+VALUES (@specified_role_id);
 INSERT INTO Contact (phone_number)
-VALUES ("(519) 563-5593");
+VALUES (@specified_phone_number);
 INSERT INTO Employee
 VALUES (
-        50001,
-        "(519) 563-5593",
-        2,
-        "Firstname",
-        "Lastname",
+        @specified_role_id,
+        @specified_phone_number,
+        @specified_branch_id,
+        @specified_first_name,
+        @specified_last_name,
         "2010-06-25",
-        "276390558",
+        @specified_sin,
         "623",
         "12821",
         "0187034",
         (
             SELECT company_name
             FROM Branch
-            WHERE branch_id = 2
+            WHERE branch_id = @specified_branch_id
         )
     );
 SELECT *
@@ -94,7 +94,8 @@ WHERE e.employee_id = t4.employee_id;
 SELECT branch_id,
     (total_paid / number_of_employees) AS pay_per_employee
 FROM (
-        SELECT e.employee_id, e.branch_id,
+        SELECT e.employee_id,
+            e.branch_id,
             SUM(total_paid_employee) AS total_paid,
             COUNT(branch_id) AS number_of_employees
         FROM Employee e
@@ -103,8 +104,7 @@ FROM (
                     SUM(payment_salary + payment_bonus) AS total_paid_employee
                 FROM Payroll
                 GROUP BY employee_id
-            ) AS p
-            ON e.employee_id = p.employee_id
+            ) AS p ON e.employee_id = p.employee_id
         GROUP BY branch_id
     ) AS MainTable
 ORDER BY pay_per_employee DESC
@@ -123,4 +123,4 @@ WHERE branch_id = (
                 ORDER BY num_employees ASC
                 LIMIT 1
             ) AS branch_id_to_delete
-);
+    );
