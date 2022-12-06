@@ -6,7 +6,6 @@ const pool = require("../pool.js");
 
 // FIRST
 router.put("/:employee_id", (req, res) => {
-    console.log(req.body);
     const viewStart =
             req.params.employee_id > 2 ? req.params.employee_id - 2 : 0,
         viewEnd = 3;
@@ -113,7 +112,6 @@ router.post("/", (req, res) => {
                             res.status(400).send("Duplicate phone number");
                         });
                     } else if (problem === "Employee.employee_sin") {
-                        console.log(`DELETE FROM Contact WHERE phone_number = ${req.body.phone_number}`);
                         pool.query(`DELETE FROM EmployeeRole WHERE employee_id = ${e_id}; DELETE FROM Contact WHERE phone_number = \"${req.body.phone_number}\"; ALTER TABLE EmployeeRole AUTO_INCREMENT = ${e_id - 1};`, (errrrr, resppp, fieeee) => {
                             if(errrrr) throw errrrr;
                             res.status(400).send("Duplicate SIN");

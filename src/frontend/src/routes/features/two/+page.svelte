@@ -2,6 +2,37 @@
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import SvelteTable from "svelte-table";
 
+	import { object, number, string } from 'yup';
+
+	let schema = object({
+	  	role_id: 
+	  		number("role_id must be a number")
+	  		.required("role_id is required")
+	  		.min(1, "role_id needs to be between 1 and 55")
+	  		.max(55, "role_id needs to be between 1 and 55")
+			.integer("role_id must be an integer"),
+	  	branch_id: 
+	  		number("branch_id must be a number")
+	  		.required("branch_id is required")
+	  		.min(1, "branch_id needs to be between 1 and 300")
+	  		.max(300, "branch_id needs to be between 1 and 300")
+	  		.integer("branch_id must be an integer"),
+		phone_number: // /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/ (xxx) xxx-xxxx
+	  		string("phone_number must be a string")
+	  		.required("phone_number is required")
+	  		.matches(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/, "phone number needs to be in the form of (xxx) xxx-xxxx", { excludeEmptyString: true}),
+		first_name: 
+	  		string("first_name must be a string")
+	  		.required("first_name is required"),
+		last_name: 
+	  		string("last_name must be a string")
+	  		.required("last_name is required"),
+		sin: 
+			string("sin must be a number")
+	  		.required("sin is required")
+	  		.matches(/^\d{9}$/, "sin must be 9 digit number", { excludeEmptyString: true })
+	});
+
 	let sortBy = "employee_id";
   	let sortOrder = 0;
 	let rSelectedCols = ["employee_id", "branch_id", "employee_first_name", "employee_last_name", "company_name"];
@@ -63,6 +94,61 @@ let bank_account_number = "0187034";
 			rLoadingState = false;
 		}
 	}
+
+	let errors = {};
+
+  const handleSubmit = async () => {
+    try {
+      await schema.validate({role_id, branch_id, phone_number, first_name, last_name, sin}, { abortEarly: false });
+      errors = {};
+	  
+	  rLoadingState = true;
+		let sendObj = `
+			{
+				"role_id" : ${role_id},
+				"phone_number" : "${phone_number}",
+				"branch_id" : ${branch_id},
+				"first_name" : "${first_name}",
+				"last_name" : "${last_name}",
+				"start_date" : "${start_date}",
+				"sin" : "${sin}",
+				"bank_institution_number" : "${bank_institution_number}",
+				"bank_transit_number" : "${bank_transit_number}",
+				"bank_account_number" : "${bank_account_number}"	
+			}
+		`;
+		const url = `http://localhost:3000/api/employee/`;
+		const res = await fetch(url, {
+			method: 'POST',
+			mode: 'cors',
+			cache: 'no-cache',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: sendObj,
+		});
+		if (res.ok) {
+			let data = await res.json();
+			rData = data.before;
+			vData = data.after;
+			rLoadingState = false;
+			rState = true;
+		} else{
+			let data = await res.text();
+			alert(data);
+			rLoadingState = false;
+		}
+    } catch (err) {
+		let retStr = "";
+		let idx =1;
+      errors = err.inner.reduce((acc, err) => {
+		  
+			retStr += `${idx}. ${err.message}\n`;
+			idx +=1;
+		}, {});
+	  alert(retStr);
+    }
+  };
 
 	//console.log(data.highest_pay_per_employee);
 	
@@ -249,7 +335,7 @@ VALUES (
 
 	<div class="w-full font-sans p-1 pr-0 pl-0 flex flex-wrap items-center">
 		<div class='flex-none w-10'></div>
-		<button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-bold tracking-wider py-4 rounded shadow hover:bg-green-400" on:click={getQuery}>
+		<button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-bold tracking-wider py-4 rounded shadow hover:bg-green-400" on:click={handleSubmit}>
 			{#if !rLoadingState}
 			GO 
 			{:else}

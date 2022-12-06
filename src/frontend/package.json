@@ -28,6 +28,7 @@
 	"dependencies": {
 		"highlight.js": "^11.7.0",
 		"svelte-table": "^0.5.2",
-		"tailwindcss-opentype": "^1.1.0"
+		"tailwindcss-opentype": "^1.1.0",
+		"yup": "^0.32.11"
 	}
 }

@@ -2,6 +2,23 @@
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import SvelteTable from "svelte-table";
 
+	import { object, number } from 'yup';
+
+	let schema = object({
+	  	employee_id: 
+	  		number("employee_id must be a number")
+	  		.required("employee_id is required")
+	  		.min(1, "employee_id needs to be between 1 and 50,000")
+	  		.max(50000, "employee_id needs to be between 1 and 50,000")
+			.integer("employee_id must be an integer"),
+	  	branch_id: 
+	  		number("branch_id must be a number")
+	  		.required("branch_id is required")
+	  		.min(1, "branch_id needs to be between 1 and 300")
+	  		.max(300, "branch_id needs to be between 1 and 300")
+	  		.integer("branch_id must be an integer")
+	});
+
 	let sortBy = "employee_id";
   	let sortOrder = 0;
 	let rSelectedCols = ["employee_id", "branch_id", "employee_first_name", "employee_last_name", "company_name"];
@@ -14,9 +31,10 @@
 
 	let rLoadingState = false;
 
-	let branch_id = 0;
-	let employee_id = 0;
+	let branch_id = 294;
+	let employee_id = 1;
 	async function getQuery () {
+		handleSubmit;
 		rLoadingState = true;
 		const url = `http://localhost:3000/api/employee/${employee_id}`;
 		const res = await fetch(url, {
@@ -35,6 +53,42 @@
 		rLoadingState = false;
 		rState = true;
 	}
+
+	let errors = {};
+
+  const handleSubmit = async () => {
+    try {
+      await schema.validate({branch_id, employee_id}, { abortEarly: false });
+      errors = {};
+	  
+	  rLoadingState = true;
+		const url = `http://localhost:3000/api/employee/${employee_id}`;
+		const res = await fetch(url, {
+			method: 'PUT',
+			mode: 'cors',
+			cache: 'no-cache',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: `{ \"branch_id\" : ${branch_id} }`,
+		});
+		
+		let data = await res.json();
+		rData = data.before;
+		vData = data.after;
+		rLoadingState = false;
+		rState = true;
+    } catch (err) {
+		let retStr = "";
+		let idx =1;
+      errors = err.inner.reduce((acc, err) => {
+		  
+			retStr += `${idx}. ${err.message}\n`;
+			idx +=1;
+		}, {});
+	  alert(retStr);
+    }
+  };
 
 	//console.log(data.highest_pay_per_employee);
 	
@@ -155,13 +209,13 @@
 				<div class="code-block font-sans">
 				<CodeBlock class="p-4" language="sql" background='bg-[#141517]' text='text-sm' buttonCopy='p-0.5 pt-0 border border-2 rounded-none uppercase' rounded='rounded-container-token' code={`
 UPDATE Employee e
-SET e.branch_id = 2,
+SET e.branch_id = ${branch_id},
     e.company_name = (
         SELECT company_name
         FROM Branch b
-        WHERE b.branch_id = 2
+        WHERE b.branch_id = ${branch_id}
     )
-WHERE e.employee_id = 1;`}></CodeBlock>
+WHERE e.employee_id = ${employee_id};`}></CodeBlock>
 	</div>
 	
 	<div class="w-full mt-1 font-mono mx-auto flex flex-wrap items-center">
@@ -169,15 +223,14 @@ WHERE e.employee_id = 1;`}></CodeBlock>
 		<div class='flex-none w-5'></div>
 		<p class="flex-1 text-base font-semibold tracking-tight text-center">employee_id</p>
 	</div>
-	<div class="w-full font-mono mb-3 mx-auto pb-1 flex flex-wrap items-center">
-		<input class="flex-1 pl-1.5 text-base tracking-wider py-4 rounded shadow" bind:value={branch_id}/>
-		<div class='flex-none w-5'></div>
-		<input class="flex-1 pl-1.5 text-base tracking-wider py-4 rounded shadow" bind:value={employee_id}/>
-	</div>
-	
+		<div class="w-full font-mono mb-3 mx-auto pb-1 flex flex-wrap items-center">
+			<input class="flex-1 pl-1.5 text-base tracking-wider py-4 rounded shadow" bind:value={branch_id}/>
+			<div class='flex-none w-5'></div>
+			<input class="flex-1 pl-1.5 text-base tracking-wider py-4 rounded shadow" bind:value={employee_id}/>
+		</div>
 	<div class="w-full font-sans p-1 pr-0 pl-0 flex flex-wrap items-center">
 		<div class='flex-none w-10'></div>
-		<button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-bold tracking-wider py-4 rounded shadow hover:bg-green-400" on:click={getQuery}>
+		<button type="submit" class="flex-1 mt-2 block md:inline-block appearance-none bg-green-500 text-white text-base font-bold tracking-wider py-4 rounded shadow hover:bg-green-400" on:click={handleSubmit}>
 			{#if !rLoadingState}
 			GO 
 			{:else}
