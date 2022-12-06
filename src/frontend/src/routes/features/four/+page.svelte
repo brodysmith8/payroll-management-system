@@ -122,20 +122,11 @@
 						Regent Park Payroll
 					</a>
 				</div>
-	
-				<div class="block lg:hidden pr-4">
-					<button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-green-500 appearance-none focus:outline-none">
-						<svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-							<title>Menu</title>
-							<path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-						</svg>
-					</button>
-				</div>
 			</div>
 		</nav>
 	
 		<!--Container-->
-		<div class="container w-full md:max-w-3xl mt-2 mx-auto pb-20">
+		<div class="container w-full md:max-w-3xl mx-auto pb-20">
 	
 			<div class="w-full px-4 md:px-6 text-xl text-gray-800 leading-normal" style="font-family:Georgia,serif;">
 	 
@@ -190,7 +181,7 @@ LIMIT 1;`}></CodeBlock>
 			rows={rData} 
 			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
 			  classNameThead={['bg-green-500 text-white']}
-			  classNameCell={'border border-slate-600 font-mono'}/>
+			  classNameCell={'border border-slate-600 font-mono pl-2'}/>
 	</div>
 	{/if}
 
@@ -207,7 +198,7 @@ LIMIT 1;`}></CodeBlock>
       		bind:sortOrder
 			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
 			  classNameThead={['bg-green-500 text-white']}
-			  classNameCell={'border border-slate-600 font-mono'}/>
+			  classNameCell={'border border-slate-600 font-mono pl-2'}/>
 	</div>
 	{/if}
 			</div>

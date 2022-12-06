@@ -1,7 +1,12 @@
-# SE3309_2022_Assignment_4
+# How to run 
 
-This repository contains 2 folders to be used to manage your final project assignment. 
+## Start backend API service 
+1. Navigate to `backend/`
+2. Run `npm install package.json`
+3. Run `nodemon app.js`
 
-The APP folder is where you should commit all the code for your web application. 
-
-The DUMP folder should contain the database .dump file required to re-create your database and ALL of it's data. 
+## Start frontend Svelte app 
+1. Navigate to `frontend/`
+2. Run `npm install package.json`
+3. Run `npm run dev`
+4. In a web browser, navigate to `localhost:5173` (or whatever the port is)
