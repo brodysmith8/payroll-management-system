@@ -219,17 +219,11 @@ LIMIT 1;`}></CodeBlock>
 	
 		<footer class="bg-white border-t border-gray-400 shadow">
 			<div class="container max-w-4xl mx-auto flex py-8">
-	
 				<div class="w-full mx-auto flex flex-wrap">
-					<div class="flex w-full md:w-1/2 mx-auto text-center">
-						<div class="px-8">
-							<h3 class="font-bold text-gray-900">Regent Park Enterprises, Inc. (c) 2022</h3>
-						</div>
+					<div class="mx-auto w-full text-center">
+							<h3 class="font-bold text-gray-900">A. El-Zein, S. Ahmad, V. Biyanwila, B. Smith (c) 2022</h3>
 					</div>
 				</div>
-	
-	
-	
 			</div>
 		</footer>
 	</body>

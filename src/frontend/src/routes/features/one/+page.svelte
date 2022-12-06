@@ -218,7 +218,7 @@ SET e.branch_id = ${branch_id},
 WHERE e.employee_id = ${employee_id};`}></CodeBlock>
 	</div>
 	
-	<div class="w-full mt-1 font-mono mx-auto flex flex-wrap items-center">
+	<div class="w-full mt-2 pt-1 font-mono mx-auto flex flex-wrap items-center">
 		<p class="flex-1 text-base font-semibold tracking-tight text-center">branch_id</p>
 		<div class='flex-none w-5'></div>
 		<p class="flex-1 text-base font-semibold tracking-tight text-center">employee_id</p>
@@ -300,9 +300,6 @@ WHERE e.employee_id = ${employee_id};`}></CodeBlock>
 							<h3 class="font-bold text-gray-900">A. El-Zein, S. Ahmad, V. Biyanwila, B. Smith (c) 2022</h3>
 					</div>
 				</div>
-	
-	
-	
 			</div>
 		</footer>
 	</body>

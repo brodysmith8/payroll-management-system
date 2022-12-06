@@ -405,9 +405,6 @@ VALUES (
 							<h3 class="font-bold text-gray-900">A. El-Zein, S. Ahmad, V. Biyanwila, B. Smith (c) 2022</h3>
 					</div>
 				</div>
-	
-	
-	
 			</div>
 		</footer>
 	</body>
