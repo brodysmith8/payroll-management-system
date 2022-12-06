@@ -2,10 +2,10 @@
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import SvelteTable from "svelte-table";
 
-	let sortBy = "pay_per_employee";
+	let sortBy = "total_paid";
   	let sortOrder = 0;
-	let rSelectedCols = ["branch_id", "pay_per_employee"];
-	let vSelectedCols = ["branch_id", "pay_per_employee", "total_paid", "number_of_employees"];
+	let rSelectedCols = ["employee_id", "employee_first_name", "employee_last_name", "role_name", "total_paid"];
+	let vSelectedCols = ["employee_id", "total_paid"];
 
 	let rData = null;
 	let rState = false;
@@ -38,10 +38,10 @@
 
 	async function getQuery () {
 		rLoadingState = true;
-		const res = await fetch('http://localhost:3000/api/branch/highest-pay-per-employee');
+		const res = await fetch('http://localhost:3000/api/employee/highest-paid');
 		data = await res.json();
 
-		rData = data.highest_pay_per_employee;
+		rData = data.highest_paid_employee;
 		rState = true;
 		rLoadingState = false;
 	}
@@ -53,51 +53,49 @@
 		}
 	}
 
-	//console.log(data.highest_pay_per_employee);
-	
 	const rCOLUMNS = {
-		branch_id : {
-			key:"branch_id",
-			title:"branch_id",
-			value: v => v.branch_id,
+		employee_id : {
+			key:"employee_id",
+			title:"employee_id",
+			value: v => v.employee_id,
 			sortable: true,
 			headerClass: "border border-slate-600",
 		},
-		pay_per_employee : {
-			key:"pay_per_employee",
-			title:"pay_per_employee",
-			value: v => v.pay_per_employee,
+		employee_first_name : {
+			key:"employee_first_name",
+			title:"first_name",
+			value: v => v.employee_first_name,
 			sortable: true,
 			headerClass: "border border-slate-600",
+		},
+		employee_last_name : {
+			key:"employee_last_name",
+			title:"last_name",
+			value: v => v.employee_last_name,
+			sortable: true,
+			headerClass: "border border-slate-600",		
+		},
+		role_name : {
+			key:"role_name",
+			title:"role_name",
+			value: v => v.role_name,
+			sortable: true,
+			headerClass: "border border-slate-600",				
 		},
 		total_paid : {
 			key:"total_paid",
 			title:"total_paid",
 			value: v => v.total_paid,
-			sortable: true,
-			headerClass: "border border-slate-600",		
-		},
-		number_of_employees : {
-			key:"number_of_employees",
-			title:"number_of_employees",
-			value: v => v.number_of_employees,
 			sortable: true,
 			headerClass: "border border-slate-600",				
 		}
 	}
 
 	const vCOLUMNS = {
-		branch_id : {
-			key:"branch_id",
-			title:"branch_id",
-			value: v => v.branch_id,
-			sortable: true,
-			headerClass: "border border-slate-600",
-		},
-		pay_per_employee : {
-			key:"pay_per_employee",
-			title:"pay_per_employee",
-			value: v => v.pay_per_employee,
+		employee_id : {
+			key:"employee_id",
+			title:"employee_id",
+			value: v => v.employee_id,
 			sortable: true,
 			headerClass: "border border-slate-600",
 		},
@@ -105,13 +103,6 @@
 			key:"total_paid",
 			title:"total_paid",
 			value: v => v.total_paid,
-			sortable: true,
-			headerClass: "border border-slate-600",		
-		},
-		number_of_employees : {
-			key:"number_of_employees",
-			title:"number_of_employees",
-			value: v => v.number_of_employees,
 			sortable: true,
 			headerClass: "border border-slate-600",				
 		}
@@ -223,7 +214,7 @@ WHERE e.employee_id = t4.employee_id;`}></CodeBlock>
 			rows={rData} 
 			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
 			  classNameThead={['bg-green-500 text-white']}
-			  classNameCell={'border border-slate-600'}/>
+			  classNameCell={'border border-slate-600 font-mono'}/>
 	</div>
 	{/if}
 
@@ -240,7 +231,7 @@ WHERE e.employee_id = t4.employee_id;`}></CodeBlock>
       		bind:sortOrder
 			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
 			  classNameThead={['bg-green-500 text-white']}
-			  classNameCell={'border border-slate-600'}/>
+			  classNameCell={'border border-slate-600 font-mono'}/>
 	</div>
 	{/if}
 			</div>
