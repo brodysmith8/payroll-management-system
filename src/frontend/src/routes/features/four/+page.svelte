@@ -53,8 +53,6 @@
 		}
 	}
 
-	//console.log(data.highest_pay_per_employee);
-	
 	const rCOLUMNS = {
 		branch_id : {
 			key:"branch_id",
@@ -70,20 +68,6 @@
 			sortable: true,
 			headerClass: "border border-slate-600",
 		},
-		total_paid : {
-			key:"total_paid",
-			title:"total_paid",
-			value: v => v.total_paid,
-			sortable: true,
-			headerClass: "border border-slate-600",		
-		},
-		number_of_employees : {
-			key:"number_of_employees",
-			title:"number_of_employees",
-			value: v => v.number_of_employees,
-			sortable: true,
-			headerClass: "border border-slate-600",				
-		}
 	}
 
 	const vCOLUMNS = {
@@ -99,14 +83,14 @@
 			title:"pay_per_employee",
 			value: v => v.pay_per_employee,
 			sortable: true,
-			headerClass: "border border-slate-600",
+			headerClass: "border border-slate-600",				
 		},
 		total_paid : {
 			key:"total_paid",
 			title:"total_paid",
 			value: v => v.total_paid,
 			sortable: true,
-			headerClass: "border border-slate-600",		
+			headerClass: "border border-slate-600",				
 		},
 		number_of_employees : {
 			key:"number_of_employees",
@@ -114,7 +98,7 @@
 			value: v => v.number_of_employees,
 			sortable: true,
 			headerClass: "border border-slate-600",				
-		}
+		},
 	};
 	
 	$: rCols = rSelectedCols.map(key => rCOLUMNS[key]);
@@ -167,7 +151,8 @@
 SELECT branch_id,
     (total_paid / number_of_employees) AS pay_per_employee
 FROM (
-        SELECT e.employee_id, e.branch_id,
+        SELECT e.employee_id,
+            e.branch_id,
             SUM(total_paid_employee) AS total_paid,
             COUNT(branch_id) AS number_of_employees
         FROM Employee e
@@ -176,8 +161,7 @@ FROM (
                     SUM(payment_salary + payment_bonus) AS total_paid_employee
                 FROM Payroll
                 GROUP BY employee_id
-            ) AS p
-            ON e.employee_id = p.employee_id
+            ) AS p ON e.employee_id = p.employee_id
         GROUP BY branch_id
     ) AS MainTable
 ORDER BY pay_per_employee DESC
@@ -206,7 +190,7 @@ LIMIT 1;`}></CodeBlock>
 			rows={rData} 
 			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
 			  classNameThead={['bg-green-500 text-white']}
-			  classNameCell={'border border-slate-600'}/>
+			  classNameCell={'border border-slate-600 font-mono'}/>
 	</div>
 	{/if}
 
@@ -223,7 +207,7 @@ LIMIT 1;`}></CodeBlock>
       		bind:sortOrder
 			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
 			  classNameThead={['bg-green-500 text-white']}
-			  classNameCell={'border border-slate-600'}/>
+			  classNameCell={'border border-slate-600 font-mono'}/>
 	</div>
 	{/if}
 			</div>

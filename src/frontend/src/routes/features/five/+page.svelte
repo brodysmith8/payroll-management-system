@@ -2,15 +2,18 @@
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import SvelteTable from "svelte-table";
 
-	let sortBy = "pay_per_employee";
-  	let sortOrder = 0;
-	let rSelectedCols = ["branch_id", "pay_per_employee"];
-	let vSelectedCols = ["branch_id", "pay_per_employee", "total_paid", "number_of_employees"];
+	let sortBy = "num_employees";
+  	let sortOrder = 1;
+	let rSelectedCols = ["branch_id", "num_employees"];
+	let vSelectedCols = ["branch_id", "num_employees"];
+	let nSelectedCols = ["total_number_of_employees", "total_number_of_branches"];
 
 	let rData = null;
 	let rState = false;
 	let vData = null;
 	let vState = false;
+	let nRData = new Object();
+	let nVData = new Object();
 
 	let rLoadingState = false;
 	
@@ -38,17 +41,24 @@
 
 	async function getQuery () {
 		rLoadingState = true;
-		const res = await fetch('http://localhost:3000/api/branch/highest-pay-per-employee');
+		const res = await fetch('http://localhost:3000/api/branch/lowest-employee-count', {
+			method: 'DELETE',
+			mode: 'cors',
+		});
 		data = await res.json();
 
-		rData = data.highest_pay_per_employee;
+		rData = data.before;
+		nRData.total_number_of_employees = rData[1][0].total_number_of_employees;
+		nRData.total_number_of_branches = rData[2][0].total_number_of_branches;
 		rState = true;
 		rLoadingState = false;
 	}
 
 	async function getValidation () {
 		if (rState) {
-			vData = data.validation_list;
+			vData = data.after;
+			nVData.total_number_of_employees = vData[1][0].total_number_of_employees;
+			nVData.total_number_of_branches = vData[2][0].total_number_of_branches;
 			vState = true;
 		}
 	}
@@ -63,27 +73,13 @@
 			sortable: true,
 			headerClass: "border border-slate-600",
 		},
-		pay_per_employee : {
-			key:"pay_per_employee",
-			title:"pay_per_employee",
-			value: v => v.pay_per_employee,
+		num_employees : {
+			key:"num_employees",
+			title:"num_employees",
+			value: v => v.num_employees,
 			sortable: true,
 			headerClass: "border border-slate-600",
 		},
-		total_paid : {
-			key:"total_paid",
-			title:"total_paid",
-			value: v => v.total_paid,
-			sortable: true,
-			headerClass: "border border-slate-600",		
-		},
-		number_of_employees : {
-			key:"number_of_employees",
-			title:"number_of_employees",
-			value: v => v.number_of_employees,
-			sortable: true,
-			headerClass: "border border-slate-600",				
-		}
 	}
 
 	const vCOLUMNS = {
@@ -94,31 +90,35 @@
 			sortable: true,
 			headerClass: "border border-slate-600",
 		},
-		pay_per_employee : {
-			key:"pay_per_employee",
-			title:"pay_per_employee",
-			value: v => v.pay_per_employee,
+		num_employees : {
+			key:"num_employees",
+			title:"num_employees",
+			value: v => v.num_employees,
 			sortable: true,
 			headerClass: "border border-slate-600",
 		},
-		total_paid : {
-			key:"total_paid",
-			title:"total_paid",
-			value: v => v.total_paid,
-			sortable: true,
-			headerClass: "border border-slate-600",		
-		},
-		number_of_employees : {
-			key:"number_of_employees",
-			title:"number_of_employees",
-			value: v => v.number_of_employees,
-			sortable: true,
-			headerClass: "border border-slate-600",				
-		}
 	};
 	
+	const nCOLUMNS = {
+		total_number_of_employees : {
+			key:"total_number_of_employees",
+			title:"total_number_of_employees",
+			value: v => v.total_number_of_employees,
+			sortable: true,
+			headerClass: "border border-slate-600",
+		},
+		total_number_of_branches : {
+			key:"total_number_of_branches",
+			title:"total_number_of_branches",
+			value: v => v.total_number_of_branches,
+			sortable: true,
+			headerClass: "border border-slate-600",
+		},
+	};
+
 	$: rCols = rSelectedCols.map(key => rCOLUMNS[key]);
 	$: vCols = vSelectedCols.map(key => vCOLUMNS[key]);
+	$: nCols = nSelectedCols.map(key => nCOLUMNS[key]);
 	
 </script>
 	
@@ -192,12 +192,24 @@ WHERE branch_id = (
 	
 	{#if rState}
 	<div class="font-sans text-center">
-		<p class="text-xl small-caps font-bold text-gray-900 mt-6">query result</p>
+		<p class="text-xl small-caps font-bold text-gray-900 mt-6">before</p>
 	</div>
 	<div class="row">
 		<SvelteTable
 			columns={rCols}
-			rows={rData} 
+			rows={rData[0]} 
+			bind:sortBy
+			bind:sortOrder
+			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
+			  classNameThead={['bg-green-500 text-white']}
+			  classNameCell={'border border-slate-600'}/>
+	</div>
+	<div class="row">
+		<SvelteTable
+			columns={nCols}
+			rows={[nRData]}
+			bind:sortBy
+			bind:sortOrder
 			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
 			  classNameThead={['bg-green-500 text-white']}
 			  classNameCell={'border border-slate-600'}/>
@@ -206,15 +218,25 @@ WHERE branch_id = (
 
 	{#if vState}
 	<div class="font-sans text-center">
-		<p class="text-xl small-caps font-bold text-gray-900 mt-6">validation result</p>
+		<p class="text-xl small-caps font-bold text-gray-900 mt-6">after</p>
 	</div>
-
+	
 	<div class="row">
 		<SvelteTable
 			columns={vCols}
-			rows={vData} 
+			rows={vData[0]} 
 			bind:sortBy
-      		bind:sortOrder
+			bind:sortOrder
+			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
+			  classNameThead={['bg-green-500 text-white']}
+			  classNameCell={'border border-slate-600'}/>
+	</div>
+	<div class="row">
+		<SvelteTable
+			columns={nCols}
+			rows={[nVData]}
+			bind:sortBy
+			bind:sortOrder
 			classNameTable={['w-full table-auto font-sans md:text-base border-collapse border border-slate-500 mt-1']}
 			  classNameThead={['bg-green-500 text-white']}
 			  classNameCell={'border border-slate-600'}/>
