@@ -1,12 +1,14 @@
 # How to run 
 
+**Critically important note:** this database is hosted on Amazon AWS RDS with firewall rules enabled. Accessing the database with this system requires your IP being added to the whitelist.
+
 ## Start backend API service 
-1. Navigate to `backend/`
+1. Navigate to `src/backend/`
 2. Run `npm install package.json`
 3. Run `nodemon app.js`
 
 ## Start frontend Svelte app 
-1. Navigate to `frontend/`
+1. Navigate to `src/frontend/`
 2. Run `npm install package.json`
 3. Run `npm run dev`
 4. In a web browser, navigate to `localhost:5173` (or whatever the port is)
@@ -38,8 +40,9 @@ ______  _____ ___  ___ _____  _____
 | | | || ___ \  | |    \ / |  _  || . ` || |/\| |  | |  
 \ \_/ /| |_/ / _| |_   | | | | | || |\  |\  /\  / _| |_ 
  \___/ \____/  \___/   \_/ \_| |_/\_| \_/ \/  \/  \___/ 
-
-
+ 
+ 
+ 
 
  _____  _____  _____  _____  _____  _____   ___         
 /  ___||  ___||____ ||____ ||  _  ||  _  | / _ \        
@@ -47,10 +50,18 @@ ______  _____ ___  ___ _____  _____
  `--. \|  __|     \ \    \ \|  /| |\____ ||  _  |       
 /\__/ /| |___ .___/ /.___/ /\ |_/ /.___/ /| | | |       
 \____/ \____/ \____/ \____/  \___/ \____/ \_| |_/       
+  ___  ______       _____  _____   ____               
+ / _ \ | ___ \     |  __ \/ __  \ / ___|              
+/ /_\ \| |_/ /     | |  \/`' / /'/ /___               
+|  _  ||  __/      | | __   / /  | ___ \              
+| | | || |  ______ | |_\ \./ /___| \_/ |              
+\_| |_/\_| |______| \____/\_____/\_____/              
  _____  _____  _____  _____                             
 / __  \|  _  |/ __  \/ __  \                            
 `' / /'| |/' |`' / /'`' / /'                            
   / /  |  /| |  / /    / /                              
 ./ /___\ |_/ /./ /___./ /___                            
-\_____/ \___/ \_____/\_____/                         
+\_____/ \___/ \_____/\_____/                            
+                                                        
+                                                                        
  ```
