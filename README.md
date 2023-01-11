@@ -2,6 +2,9 @@
 
 **Critically important note:** this database is hosted on Amazon AWS RDS with firewall rules enabled. Accessing the database with this system requires your IP being added to the whitelist.
 
+# Note on Secrets/Passwords 
+All passwords and secrets in this project have been revoked.
+
 ## Start backend API service 
 1. Navigate to `src/backend/`
 2. Run `npm install package.json`
