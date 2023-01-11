@@ -20,6 +20,7 @@ because it is more appropriate for the use case. https://www.npmjs.com/package/m
 //     console.log("Connected!"); // Log connected
 // });
 
+// by the way, this RDS instance no longer exists, so password doesn't matter
 const pool = mysql.createPool({
     multipleStatements: true,
     connectionLimit: 10,
